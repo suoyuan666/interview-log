@@ -8,6 +8,12 @@ copyright: Copyright &copy; 2025
 
 nav:
   - index.md
+  - 操作系统:
+    - os/process.md
+    - os/lock.md
+    - os/network.md
+  - 计算机网络:
+    - network/network.md
 
 theme:
   name: material
@@ -29,3 +35,13 @@ theme:
 
 markdown_extensions:
   - footnotes
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css
