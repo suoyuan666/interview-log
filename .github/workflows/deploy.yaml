@@ -46,7 +46,7 @@ jobs:
         run: "pip3 install mkdocs-material mkdocs"
       - name: Build with mkdocs
         run: |
-          cd src && mkdocs build 
+          mkdocs build 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
