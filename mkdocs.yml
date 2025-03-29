@@ -1,0 +1,31 @@
+site_name: 面经总结
+site_description: 索元的面经总结 
+site_author: suoyuan666
+# site_url: 
+repo_name: interview-log
+repo_url: https://github.com/suoyuan666/interview-log
+copyright: Copyright &copy; 2025
+
+nav:
+  - index.md
+
+theme:
+  name: material
+  language: zh
+  palette:
+    primary: white
+    accent: red
+    scheme: preference
+  features:
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - search.suggest
+  - search.highlight
+  - search.share
+  - content.footnote.tooltips
+  font:
+    text: Noto Sans
+    code: Source Code Pro
+
+markdown_extensions:
+  - footnotes
