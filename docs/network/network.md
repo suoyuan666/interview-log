@@ -50,6 +50,31 @@ TCP 拥塞控制主要用于解决网络中因数据包过多而导致的丢包�
 
 > 上述四个算法结合是经典的实现方式，现代的拥塞控制并不完全是这么做的。
 
+- Reno（经典算法，基于丢包检测）
+    - `cwnd` 采用 加性增，乘性减
+        - 每 RTT 线性增加 1（拥塞避免）
+        - 丢包时 `cwnd = cwnd / 2`（乘性减）
+    - 适用于低丢包网络，但在高丢包环境下性能较差
+- CUBIC（适用于高带宽、长 RTT 链路）
+    - `cwnd` 采用 立方函数增长（Cubic 曲线）
+        - $cwnd = C (t - K)^3 + Wmax$
+        - 其中 `t` 是经过的时间，`Wmax` 是上次丢包时的 `cwnd`，`C` 是一个常数。
+    - 增长曲线
+        - 前期增长慢（避免过冲）
+        - 后期增长快（更快利用带宽）
+        - 接近 `Wmax` 时减速，减少波动
+    - 适用于高带宽、长 RTT 链路（如数据中心、跨洋网络）
+    - 低 RTT 时增长过慢，不适合无线环境
+    - Linux 默认使用该算法
+- BBR（现代化，高吞吐低延迟）
+    - 基于带宽估计 + RTT 最小值
+    - 采用 Bandwidth Delay Product（BDP）计算最优窗口
+        - $cwnd = bandwidth * min\_rtt$
+        - 只要 RTT 变大（可能是队列积压），就降低发送速率，避免造成排队延迟。
+    - 不依赖丢包检测，而是通过带宽估计优化传输。
+    - 高速率、低延迟，适用于无线网络。
+    - 可能占满整个队列，影响其他 TCP 连接的公平性
+
 ## 3. 超时重传如何计算 RTO（Retransmission Timeout）
 
 网络的 RTT（Round-Trip Time）是不稳定的，RTO 不能直接用 RTT，而是用平滑的估计。
@@ -97,3 +122,24 @@ TCP 采用 加权平均法 平滑 RTT，并计算 RTT 的波动，来决定合�
 如果被动关闭连接的那一方**没有数据要发送**并且**开启了 TCP 延迟确认机制**，ACK 和 FIN 可能会被合并到同一个包中，表现为只需要三次报文
 
 > TCP 的延迟确认机制是为了解决 ACK 的传输效率问题。该机制默认开启。当有数据要发送时，ACK 会随数据一起发送。无数据发送的话，就等一段时间，看看是否会等到要发送数据。但如果等待的时候对方又有数据包到达，就会立刻发送 ACK。
+
+## 6. 介绍一下 TCP 的三次握手
+
+- 第一次握手 (SYN)
+    - 客户端 -> 服务器
+    - 客户端发送 SYN 包，表示请求建立连接，并携带初始序列号(ISN_client)
+    - 服务器此时处于 `LISTEN` 状态
+- 第二次握手 (SYN-ACK)
+    - 服务器 -> 客户端
+    - 服务器收到 SYN 后，返回 SYN-ACK 包
+        - SYN：表示同意建立连接，并提供自己的初始序列号(ISN_server)
+        - ACK：确认客户端的 SYN，即 ACK = ISN_client + 1
+    - 服务器进入 `SYN_RECEIVED` 状态
+- 第三次握手 (ACK)
+    - 客户端收到 SYN-ACK 后，回复 ACK
+    - ACK = ISN_server + 1，表示确认服务器的 SYN
+    - 服务器进入 `ESTABLISHED` 状态，客户端也进入 `ESTABLISHED`，连接建立完成
+
+整个流程可以参考
+
+![Wikimedia TCP state](https://upload.wikimedia.org/wikipedia/commons/a/a2/Tcp_state_diagram_fixed.svg)
