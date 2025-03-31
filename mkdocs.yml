@@ -17,6 +17,7 @@ nav:
   - C++:
     - program_language/cpp/oop.md
     - program_language/cpp/raii.md
+    - program_language/cpp/stl.md
 
 theme:
   name: material
