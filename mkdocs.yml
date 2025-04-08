@@ -19,6 +19,8 @@ nav:
     - program_language/cpp/oop.md
     - program_language/cpp/raii.md
     - program_language/cpp/stl.md
+  - 算法:
+    - algorithm/lru.md
 
 theme:
   name: material
